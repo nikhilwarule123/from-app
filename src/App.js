@@ -1,23 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 
 function App() {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const fetchMessages = async () => {
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .order('id', { ascending: false });
+
+    setMessages(data);
+  };
+
+  const addMessage = async () => {
+    if (message.trim() === '') return;
+
+    await supabase.from('messages').insert([{ content: message }]);
+    setMessage('');
+    fetchMessages();
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ padding: '20px' }}>
+      <h2>From App – Supabase + React</h2>
+
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type your message"
+      />
+      <button onClick={addMessage}>Send</button>
+
+      <ul>
+        {messages.map((m) => (
+          <li key={m.id}>{m.content}</li>
+        ))}
+      </ul>
     </div>
   );
 }
