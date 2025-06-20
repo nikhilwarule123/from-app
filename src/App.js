@@ -5,6 +5,7 @@ function App() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
+  //fetchmessages used to message desc order //setMessages(data) message state used
   const fetchMessages = async () => {
     const { data } = await supabase
       .from('messages')
@@ -14,14 +15,16 @@ function App() {
     setMessages(data);
   };
 
+  //addMessage Function->message insert 
   const addMessage = async () => {
     if (message.trim() === '') return;
 
     await supabase.from('messages').insert([{ content: message }]);
-    setMessage('');
-    fetchMessages();
+    setMessage('');//setMessage('') empty input field 
+    fetchMessages();//fetchMessages() call new list purchase
   };
 
+  //used to featch data database text message show
   useEffect(() => {
     fetchMessages();
   }, []);
@@ -29,6 +32,7 @@ function App() {
   return (
     <div style={{ padding: '20px' }}>
       <h2>From App – Supabase + React</h2>
+
 
       <input
         type="text"
